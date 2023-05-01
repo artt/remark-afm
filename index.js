@@ -7,8 +7,12 @@ export default function foo() {
       if (['textDirective', 'leafDirective', 'containerDirective'].includes(node.type)) {
         const data = node.data || (node.data = {})
         const hast = h(node.name, node.attributes)
-        console.log(data, hast)
-        if (['note', 'tip'].includes(node.name)) {
+        if (['tip'].includes(node.name)) {
+          if (node.children && node.children[0].data?.directiveLabel) {
+            node.children[0].data.hName = 'h5'
+          }
+          console.log(node.children[0])
+          console.log(hast)
           data.hName = 'blockquote'
           data.hProperties = { className: [`alert-${node.name}`] }
           // data.hName = hast.tagName
