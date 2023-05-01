@@ -4,17 +4,16 @@ import { h } from 'hastscript'
 export default function foo() {
   return (tree) => {
     visit(tree, (node) => {
-      if (
-        node.type === 'textDirective' ||
-        node.type === 'leafDirective' ||
-        node.type === 'containerDirective'
-      ) {
+      if (['textDirective', 'leafDirective', 'containerDirective'].includes(node.type)) {
         console.log('Directive found: ', node)
         const data = node.data || (node.data = {})
         const hast = h(node.name, node.attributes)
-
-        data.hName = hast.tagName
-        data.hProperties = hast.properties
+        if (['note', 'tip'].includes(data.hName)) {
+          data.hName = 'div'
+          data.hProperties = { className: ['alert', data.hName] }
+          // data.hName = hast.tagName
+          // data.hProperties = hast.properties
+        }
       }
     })
   }
