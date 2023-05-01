@@ -9,8 +9,8 @@ export default function foo() {
         const hast = h(node.name, node.attributes)
         console.log(data, hast)
         if (['note', 'tip'].includes(node.name)) {
-          data.hName = 'div'
-          data.hProperties = { className: ['alert', `alert-${node.name}`] }
+          data.hName = 'blockquote'
+          data.hProperties = { className: [`alert-${node.name}`] }
           // data.hName = hast.tagName
           // data.hProperties = hast.properties
         }
