@@ -1,0 +1,16 @@
+{
+  "name": "remark-afm",
+  "version": "1.0.0",
+  "description": "Art Flavored Markdown remark plugin",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "artt",
+  "license": "MIT",
+  "dependencies": {
+    "hastscript": "^7.2.0",
+    "unist-util-visit": "^4.1.2"
+  }
+}
