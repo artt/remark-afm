@@ -7,7 +7,7 @@ export default function foo() {
       if (['textDirective', 'leafDirective', 'containerDirective'].includes(node.type)) {
         const data = node.data || (node.data = {})
         const hast = h(node.name, node.attributes)
-        if (['tip', 'note', 'warning', ''].includes(node.name)) {
+        if (['tip', 'info', 'note', 'warning', 'danger'].includes(node.name)) {
           if (node.children && node.children[0].data?.directiveLabel) {
             node.children[0].data.hName = 'AlertTitle'
             node.children[0].data.hProperties = { type: node.name }
