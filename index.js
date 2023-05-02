@@ -7,12 +7,21 @@ export default function foo() {
       if (['textDirective', 'leafDirective', 'containerDirective'].includes(node.type)) {
         const data = node.data || (node.data = {})
         const hast = h(node.name, node.attributes)
-        if (['tip'].includes(node.name)) {
+        if (['tip', 'note', 'warning', ''].includes(node.name)) {
           if (node.children && node.children[0].data?.directiveLabel) {
-            node.children[0].data.hName = 'h5'
+            node.children[0].data.hName = 'AlertTitle'
+            node.children[0].data.hProperties = { type: node.name }
           }
-          console.log(node.children[0])
-          console.log(hast)
+          else {
+            node.children.unshift({
+              type: 'paragraph',
+              data: {
+                hName: 'AlertTitle',
+                hProperties: { type: node.name }
+              },
+              children: [],
+            })
+          }
           data.hName = 'blockquote'
           data.hProperties = { className: [`alert-${node.name}`] }
           // data.hName = hast.tagName
