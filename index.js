@@ -1,5 +1,6 @@
 import { visit } from 'unist-util-visit'
 import { h } from 'hastscript'
+import * as shiki from 'shiki'
 
 function processAlertBlocks(node) {
   const data = node.data || (node.data = {})
@@ -25,8 +26,39 @@ function processAlertBlocks(node) {
   // data.hProperties = hast.properties
 }
 
+const darkTheme = "dark-plus"
+const lightTheme = "light-plus"
+
+function processCode(node, highlighter) {
+  const ignoreUnknownLanguage = false
+  const lang =
+    ignoreUnknownLanguage && !loadedLanguages.includes(node.lang)
+      ? null
+      : node.lang
+
+  // const lineOptions = parseMeta(node.meta, node)
+
+  const commonOptions = {
+    lang,
+    // lineOptions,
+  }
+
+  const highlightedDark = highlighter.codeToHtml(node.value, {
+    ...commonOptions,
+    theme: darkTheme,
+  }).replace(`class="shiki`, `class="shiki shiki-dark`)
+  const highlightedLight = highlighter.codeToHtml(node.value, {
+    ...commonOptions,
+    theme: lightTheme,
+  }).replace(`class="shiki`, `class="shiki shiki-light"`)
+
+  node.type = 'html'
+  node.value = highlightedDark + "\n" + highlightedLight
+}
+
 export default function foo() {
-  return (tree) => {
+  return async (tree) => {
+    const highlighter = await shiki.getHighlighter({ themes: [darkTheme, lightTheme] })
     visit(tree, (node) => {
       if (node.type === "containerDirective") {
         if (['tip', 'info', 'note', 'warning', 'danger'].includes(node.name)) {
@@ -58,6 +90,10 @@ export default function foo() {
             type: node.name,
           }
         }
+      }
+      if (node.type === "code") {
+        processCode(node, highlighter)
+        console.log(node)
       }
     })
   }
