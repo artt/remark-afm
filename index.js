@@ -38,19 +38,18 @@ function processCode(node, highlighter) {
 
   // const lineOptions = parseMeta(node.meta, node)
 
-  const commonOptions = {
-    lang,
-    // lineOptions,
-  }
+  const tokenizedDark = highlighter.codeToThemedTokens(node.value, lang, darkTheme)
+  const tokenizedLight = highlighter.codeToThemedTokens(node.value, lang, lightTheme)
 
-  const highlightedDark = highlighter.codeToHtml(node.value, {
-    ...commonOptions,
-    theme: darkTheme,
+  const lineOptions = []
+
+  const highlightedDark = shiki.renderToHtml(tokenizedDark, {
+    lineOptions,
   }).replace(`class="shiki`, `class="shiki shiki-dark`)
-  const highlightedLight = highlighter.codeToHtml(node.value, {
-    ...commonOptions,
-    theme: lightTheme,
-  }).replace(`class="shiki`, `class="shiki shiki-light"`)
+
+  const highlightedLight = shiki.renderToHtml(tokenizedLight, {
+    lineOptions,
+  }).replace(`class="shiki`, `class="shiki shiki-light`)
 
   node.type = 'html'
   node.value = highlightedDark + "\n" + highlightedLight
@@ -58,8 +57,17 @@ function processCode(node, highlighter) {
 
 export default function foo() {
   return async (tree) => {
+
+    let printThis = false
     const highlighter = await shiki.getHighlighter({ themes: [darkTheme, lightTheme] })
-    visit(tree, (node) => {
+
+    visit(tree, (node, index, parent) => {
+
+      /*
+      containerDirectives (:::+) include
+      - alert types (tip, info, note, warning, danger)
+      - figure
+      */
       if (node.type === "containerDirective") {
         if (['tip', 'info', 'note', 'warning', 'danger'].includes(node.name)) {
           processAlertBlocks(node)
@@ -80,7 +88,18 @@ export default function foo() {
           node.children = children
         }
       }
-      if (['textDirective', 'leafDirective', 'containerDirective'].includes(node.type)) {
+
+      if (node.type === "leafDirective") {
+
+      }
+
+      /*
+      textDirectives (:) include
+      - source (for figures)
+      - standard html tags: abbr, h1-h6
+      - in progress: citet, citep
+      */
+      if (node.type === "textDirective") {
         // default processor
         if (node.name === "source" || node.name === "note") {
           const data = node.data || (node.data = {})
@@ -90,11 +109,60 @@ export default function foo() {
             type: node.name,
           }
         }
+        if (node.name === "abbr") {
+          const data = node.data || (node.data = {})
+          data.hName = 'abbr'
+          data.hProperties = {
+            title: node.attributes.title,
+          }
+        }
       }
+
       if (node.type === "code") {
         processCode(node, highlighter)
-        console.log(node)
+        printThis = true
       }
+
+
+      // // wrap image in figure if not already wrapped
+      // if (node.type === "image" && printThis) {
+      //   if (parent.type !== "figure") {
+      //     console.log(parent)
+      //     parent.children.splice(index, 1, {
+      //       type: "figure",
+      //       data: {
+      //         hName: "figure",
+      //       },
+      //       children: [node],
+      //     })
+      //   }
+      // }
+
+      // unwrap paragraphs from stuff that are not necessary
+      // h[1-6]
+
+      if (node.type === "paragraph" && node.children?.length === 1) {
+        const child = node.children[0]
+        if (/h[1-6]/.test(child.name)) {
+          tree.children.splice(index, 1, {
+            type: 'heading',
+            depth: parseInt(child.name[1]),
+            children: child.children,
+          })
+        }
+        if (child.type === "image") {
+          tree.children.splice(index, 1, {
+            type: 'figure',
+            data: {
+              hName: "figure",
+            },
+            children: [child],
+          })
+        }
+      }
+        
     })
+
+    
   }
 }
