@@ -241,7 +241,6 @@ export default function foo() {
 
       if (node.type === "code") {
         processCode(node, highlighter)
-        printThis = true
       }
 
       // unwrap paragraphs from stuff that are not necessary
