@@ -131,7 +131,6 @@ function processCode(node, highlighter) {
   tokenizedDark.forEach((line, lineIndex) => {
     const commands = extractCommandsFromLine(line)
     if (commands.length > 0) {
-      console.log(`line ${lineIndex + 1}: command = ${commands.join(' : ')}`)
       const commandsWithOffset = commands.map(processRawCommands)
       commandsWithOffset.forEach(({ command, lineOffsets }) => {
         lineOffsets.forEach((lineOffset) => {
