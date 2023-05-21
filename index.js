@@ -244,17 +244,10 @@ export default function foo() {
       }
 
       // unwrap paragraphs from stuff that are not necessary
-      // h[1-6], figure
+      // figure
 
       if (node.type === "paragraph" && node.children?.length === 1) {
         const child = node.children[0]
-        if (/h[1-6]/.test(child.name)) {
-          tree.children.splice(index, 1, {
-            type: 'heading',
-            depth: parseInt(child.name[1]),
-            children: child.children,
-          })
-        }
         if (child.type === "image") {
           tree.children.splice(index, 1, {
             type: 'figure',
