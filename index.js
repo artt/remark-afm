@@ -97,7 +97,7 @@ function processCode(node, highlighter) {
       {
         '++': 'add',
         '--': 'remove',
-        '==': 'highlight',
+        '~~': 'highlight',
         '**': 'focus',
       }[command] || command
     )
