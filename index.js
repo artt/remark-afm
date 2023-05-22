@@ -163,11 +163,17 @@ function processCode(node, highlighter) {
 
   const highlightedDark = shiki.renderToHtml(tokenizedDark, {
     lineOptions,
-  }).replace(`class="shiki`, `class="shiki shiki-dark shiki-lang-${lang}`).replace(` " style="background-color: #fff"`, `"`)
+  })
+    .replace(`class="shiki`, `class="shiki shiki-dark shiki-lang-${lang}`)
+    .replace(` " style="background-color: #fff"`, `"`)
+    .replace(/(<span class="line[^>]*?>)<\/span>/g, '$1<span class="shiki-line-empty"></span></span>')
 
   const highlightedLight = shiki.renderToHtml(tokenizedLight, {
     lineOptions,
-  }).replace(`class="shiki`, `class="shiki shiki-light shiki-lang-${lang}`).replace(` " style="background-color: #fff"`, `"`)
+  })
+    .replace(`class="shiki`, `class="shiki shiki-light shiki-lang-${lang}`)
+    .replace(` " style="background-color: #fff"`, `"`)
+    .replace(/(<span class="line[^>]*?>)<\/span>/g, '$1<span class="shiki-line-empty"></span></span>')
 
   node.type = 'html'
   node.value = highlightedDark + "\n" + highlightedLight
