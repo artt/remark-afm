@@ -32,11 +32,7 @@ const lightTheme = "light-plus"
 // thanks largely to this https://www.hoeser.dev/blog/2023-02-01-syntax-highlight/
 function processCode(node, highlighter) {
 
-  const ignoreUnknownLanguage = false
-  const lang =
-    ignoreUnknownLanguage && !loadedLanguages.includes(node.lang)
-      ? null
-      : node.lang
+  const lang = node.lang
 
   // const lineOptions = parseMeta(node.meta, node)
 
@@ -167,14 +163,15 @@ function processCode(node, highlighter) {
 
   const highlightedDark = shiki.renderToHtml(tokenizedDark, {
     lineOptions,
-  }).replace(`class="shiki`, `class="shiki shiki-dark`)
+  }).replace(`class="shiki`, `class="shiki shiki-dark shiki-lang-${lang}`).replace(` " style="background-color: #fff"`, `"`)
 
   const highlightedLight = shiki.renderToHtml(tokenizedLight, {
     lineOptions,
-  }).replace(`class="shiki`, `class="shiki shiki-light`)
+  }).replace(`class="shiki`, `class="shiki shiki-light shiki-lang-${lang}`).replace(` " style="background-color: #fff"`, `"`)
 
   node.type = 'html'
   node.value = highlightedDark + "\n" + highlightedLight
+
 }
 
 export default function foo() {
