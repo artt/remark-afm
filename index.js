@@ -137,6 +137,45 @@ function processCode(node, highlighter) {
       })
     }
   })
+
+  // * This part is not being used yet
+  // tried to identify begin/end line pairs to get collapsible (like in VSCode) working
+  // it's working now for languages with open and close tokens
+  // but for python it's not working yet
+  const tmp = []
+  const pairs = []
+  tokenizedDark.forEach((line, lineIndex) => {
+    // if (lang === 'py') {
+    //   line.forEach(token => {
+    //     if (token.content === "def") {
+    //       console.log(token)
+    //       token.explanation?.forEach(e => {
+    //         console.log(e.content)
+    //         e.scopes?.forEach(s => {
+    //           console.log(s.themeMatches)
+    //         })
+    //       })
+    //     }
+    //   })
+    // }
+    line.forEach(token => {
+      token.explanation?.forEach(e => {
+        if (e.scopes.some(scope => scope.scopeName.includes('begin'))) {
+          tmp.push(lineIndex)
+        }
+        else if (e.scopes.some(scope => scope.scopeName.includes('end'))) {
+          const start = tmp.pop()
+          if (start !== lineIndex) {
+            pairs.push([start, lineIndex])
+          }
+        }
+      })
+    })
+  })
+  // console.log("---------------")
+  // console.log(node.value)
+  // console.log(pairs)
+
   // also run on light theme just to remove "command" comments
   tokenizedLight.forEach((line) => {
     extractCommandsFromLine(line)
