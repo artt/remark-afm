@@ -1,6 +1,6 @@
 {
   "name": "remark-afm",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Art Flavored Markdown remark plugin",
   "type": "module",
   "main": "index.js",
@@ -10,8 +10,6 @@
   "author": "artt",
   "license": "MIT",
   "dependencies": {
-    "hastscript": "^7.2.0",
-    "shiki": "^0.14.2",
-    "unist-util-visit": "^4.1.2"
+    "unist-util-visit": "^5.0.0"
   }
 }
